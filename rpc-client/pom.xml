@@ -5,6 +5,7 @@
         <artifactId>my-simple-rpc</artifactId>
         <groupId>com.lfh</groupId>
         <version>Release-2023.11.29-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.lfh</groupId>
