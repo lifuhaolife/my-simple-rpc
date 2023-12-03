@@ -1,11 +1,10 @@
 package com.lfh.rpc.server.netty;
 
 import com.alibaba.fastjson.JSON;
-import io.netty.buffer.ByteBuf;
+import com.lfh.rpc.server.transport.protocol.Command;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +13,7 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  * @date 2023/12/1 21:42
  */
-public class ClientRequestHandler extends SimpleChannelInboundHandler<ByteBuf> {
+public class ClientRequestHandler extends SimpleChannelInboundHandler<Command> {
 
     private final Logger logger = LoggerFactory.getLogger(ClientRequestHandler.class);
 
@@ -69,11 +68,9 @@ public class ClientRequestHandler extends SimpleChannelInboundHandler<ByteBuf> {
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) {
-        int capacity = msg.capacity();
-        byte[] msgBytes = new byte[capacity];
-        msg.readBytes(msgBytes);
-        logger.info("channelRead message : {}}", new String(msgBytes, StandardCharsets.UTF_8));
+    protected void channelRead0(ChannelHandlerContext ctx, Command msg) {
+        //reply
+        logger.info("channelRead message : {}", msg);
     }
 
     @Override

@@ -53,8 +53,8 @@ public class NettyClient  implements Closeable {
             @Override
             protected void initChannel(Channel ch) throws Exception {
                 ch.pipeline()
-//                        .addLast(new RequestEncoder())
-//                        .addLast(new ResponseDecoder())
+                        .addLast(new RequestEncoder())
+                        .addLast(new ResponseDecoder())
                         .addLast( new ClientRequestHandler());
             }
         };

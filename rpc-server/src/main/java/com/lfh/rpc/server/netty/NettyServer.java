@@ -75,8 +75,8 @@ public class NettyServer implements Closeable {
             @Override
             protected void initChannel(Channel channel) throws Exception {
                 channel.pipeline()
-//                        .addLast(new RequestDecoder())
-//                        .addLast(new ResponseEncoder())
+                        .addLast(new RequestDecoder())
+                        .addLast(new ResponseEncoder())
                         .addLast(new ServerResponseHandler());
 
             }

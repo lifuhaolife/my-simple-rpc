@@ -1,7 +1,9 @@
 package com.lfh.rpc.server.netty;
 
 import com.alibaba.fastjson.JSON;
-import io.netty.buffer.ByteBuf;
+import com.lfh.rpc.server.transport.protocol.Command;
+import com.lfh.rpc.server.transport.protocol.Header;
+import com.lfh.rpc.server.transport.protocol.ResponseHeader;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import java.nio.charset.StandardCharsets;
@@ -13,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  * @date 2023/12/1 21:35
  */
-public class ServerResponseHandler extends SimpleChannelInboundHandler<ByteBuf> {
+public class ServerResponseHandler extends SimpleChannelInboundHandler<Command> {
 
     private Logger logger = LoggerFactory.getLogger(ServerResponseHandler.class);
 
@@ -75,11 +77,15 @@ public class ServerResponseHandler extends SimpleChannelInboundHandler<ByteBuf> 
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) {
+    protected void channelRead0(ChannelHandlerContext ctx, Command msg) {
         //读取消息处理
-        int capacity = msg.readableBytes();
-        byte[] bytes = new byte[capacity];
-        msg.readBytes(bytes);
-        logger.info("receive message :{}", new String(bytes, StandardCharsets.UTF_8));
+        logger.info("receive message :{}", msg);
+        //完成消息返回
+        Header header = msg.getHeader();
+        ResponseHeader responseHeader = new ResponseHeader(header.getVersion(), header.getRequestId(), header.getType());
+        Command command = new Command(responseHeader, "server echo success".getBytes(StandardCharsets.UTF_8));
+        ctx.writeAndFlush(command);
+
+
     }
 }

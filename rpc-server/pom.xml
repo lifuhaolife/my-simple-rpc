@@ -18,6 +18,9 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-boot.version>2.6.13</spring-boot.version>
         <fastjson.version>2.0.32</fastjson.version>
+        <guava.version>31.1-jre</guava.version>
+        <commons-lang3.version>3.7</commons-lang3.version>
+        <hutool-core.version>5.8.23</hutool-core.version>
     </properties>
     <dependencies>
         <dependency>
@@ -48,6 +51,18 @@
             <version>${fastjson.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>io.netty</groupId>
@@ -55,6 +70,11 @@
             <version>${netty.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-core</artifactId>
+            <version>${hutool-core.version}</version>
+        </dependency>
 
     </dependencies>
     <dependencyManagement>
