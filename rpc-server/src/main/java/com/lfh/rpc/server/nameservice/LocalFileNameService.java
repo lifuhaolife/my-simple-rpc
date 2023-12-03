@@ -3,6 +3,7 @@ package com.lfh.rpc.server.nameservice;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.lfh.rpc.api.NameService;
+import com.lfh.rpc.server.seriaize.SerializeSupport;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -74,7 +75,7 @@ public class LocalFileNameService implements NameService {
                     while (buffer.hasRemaining()) {
                         fileChannel.read(buffer);
                     }
-                   metaData = serializeMetaData(bytes);
+                    metaData = SerializeSupport.parse(bytes);
                 } else {
                     metaData = new MetaData();
                 }
@@ -82,14 +83,12 @@ public class LocalFileNameService implements NameService {
                 if (!uris.contains(serviceAddress)) {
                     uris.add(serviceAddress);
                 }
-                //层级的Json
-
                 String jsonMetaData = JSON.toJSONString(metaData);
                 logger.info(jsonMetaData);
                 //写入磁盘
                 fileChannel.truncate(jsonMetaData.getBytes(StandardCharsets.UTF_8).length);
                 fileChannel.position(0);
-                fileChannel.write(ByteBuffer.wrap(jsonMetaData.getBytes(StandardCharsets.UTF_8)));
+                fileChannel.write(ByteBuffer.wrap(SerializeSupport.serialize(metaData)));
                 fileChannel.force(true);
             } finally {
                 lock.release();
@@ -111,7 +110,7 @@ public class LocalFileNameService implements NameService {
                     fileChannel.read(buffer);
                 }
                 if (bytes.length != 0) {
-                    metaData = serializeMetaData(bytes);
+                    metaData = SerializeSupport.parse(bytes);
                 }
             } finally {
                 lock.release();
@@ -123,20 +122,6 @@ public class LocalFileNameService implements NameService {
         }
         int index = ThreadLocalRandom.current().nextInt(uris.size());
         return uris.get(index);
-    }
-
-    private MetaData serializeMetaData(byte[] bytes) {
-        MetaData metaData;
-        Map<String, JSONArray> jsonResult = JSON.parseObject(bytes, Map.class);
-        metaData = new MetaData();
-        for (String key : jsonResult.keySet()) {
-            List<URI> list = new ArrayList<>();
-            for (Object uri : jsonResult.get(key)) {
-                list.add(URI.create(uri.toString()));
-            }
-            metaData.put(key, list);
-        }
-        return metaData;
     }
 
 }
