@@ -20,7 +20,6 @@
         <fastjson.version>2.0.32</fastjson.version>
         <guava.version>31.1-jre</guava.version>
         <commons-lang3.version>3.7</commons-lang3.version>
-        <hutool-core.version>5.8.23</hutool-core.version>
     </properties>
     <dependencies>
         <dependency>
@@ -70,11 +69,6 @@
             <version>${netty.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-core</artifactId>
-            <version>${hutool-core.version}</version>
-        </dependency>
 
     </dependencies>
     <dependencyManagement>

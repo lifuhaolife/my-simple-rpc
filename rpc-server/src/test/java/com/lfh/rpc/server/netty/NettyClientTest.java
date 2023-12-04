@@ -2,10 +2,9 @@ package com.lfh.rpc.server.netty;
 
 import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.IdUtil;
+import com.lfh.rpc.server.transport.netty.NettyClient;
 import com.lfh.rpc.server.transport.protocol.Command;
 import com.lfh.rpc.server.transport.protocol.Header;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import java.io.IOException;

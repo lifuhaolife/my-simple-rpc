@@ -1,5 +1,6 @@
-package com.lfh.rpc.server.netty;
+package com.lfh.rpc.server.transport.netty;
 
+import com.lfh.rpc.server.service.RequestHandlerDispatch;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
@@ -24,15 +25,16 @@ import org.slf4j.LoggerFactory;
 public class NettyServer implements Closeable {
 
     private final Logger logger = LoggerFactory.getLogger(NettyServer.class);
-    private int port;
+    private final int port;
     private EventLoopGroup acceptEventGroup;
 
     private EventLoopGroup ioEventGroup;
-
     private Channel channel;
+    private RequestHandlerDispatch requestHandlerDispatch;
 
     public NettyServer(int port) {
         this.port = port;
+        this.requestHandlerDispatch = RequestHandlerDispatch.getInstance();
     }
 
     public void startServer() throws InterruptedException {
@@ -77,7 +79,7 @@ public class NettyServer implements Closeable {
                 channel.pipeline()
                         .addLast(new RequestDecoder())
                         .addLast(new ResponseEncoder())
-                        .addLast(new ServerResponseHandler());
+                        .addLast(new ServerResponseHandler(requestHandlerDispatch));
 
             }
         };

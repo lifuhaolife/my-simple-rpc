@@ -18,12 +18,24 @@ public class ServiceProviderRegistry {
     private static final Logger logger = LoggerFactory.getLogger(ServiceProviderRegistry.class);
     private static Map<String /*service name*/, Object /* service provider*/> serviceProviders = new ConcurrentHashMap<>();
 
+    private static ServiceProviderRegistry instance = null;
 
-    public static synchronized <T> void addServiceProviders(Class<? extends T> serviceClass, T serviceProvider) {
+    public static ServiceProviderRegistry getInstance() {
+        if (null == instance) {
+            instance = new ServiceProviderRegistry();
+        }
+        return instance;
+    }
 
+    public synchronized <T> void addServiceProviders(Class<? extends T> serviceClass, T serviceProvider) {
         serviceProviders.put(serviceClass.getCanonicalName(), serviceProvider);
         logger.info("Add service : {}, provider : {}",
                 serviceClass.getCanonicalName(),
                 serviceProvider.getClass().getCanonicalName());
     }
+
+    public Object getServiceProvider(String providerName) {
+        return serviceProviders.get(providerName);
+    }
+
 }

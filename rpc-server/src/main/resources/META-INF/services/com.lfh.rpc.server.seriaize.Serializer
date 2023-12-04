@@ -1,2 +1,3 @@
-com.lfh.rpc.server.seriaize.MetaDataSerializer
-com.lfh.rpc.server.seriaize.StringSerializer
+com.lfh.rpc.server.seriaize.impl.MetaDataSerializer
+com.lfh.rpc.server.seriaize.impl.StringSerializer
+com.lfh.rpc.server.seriaize.impl.RpcRequestSerializer

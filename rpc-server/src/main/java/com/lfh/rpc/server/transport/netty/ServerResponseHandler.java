@@ -1,21 +1,33 @@
-package com.lfh.rpc.server.netty;
+package com.lfh.rpc.server.transport.netty;
 
 import com.alibaba.fastjson.JSON;
+import com.lfh.rpc.server.service.RequestHandler;
+import com.lfh.rpc.server.service.RequestHandlerDispatch;
 import com.lfh.rpc.server.transport.protocol.Command;
+import com.lfh.rpc.server.transport.protocol.Header;
+import com.lfh.rpc.server.transport.protocol.ResponseHeader;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author lfh
  * @version 1.0
- * @date 2023/12/1 21:42
+ * @date 2023/12/1 21:35
  */
-public class ClientRequestHandler extends SimpleChannelInboundHandler<Command> {
+public class ServerResponseHandler extends SimpleChannelInboundHandler<Command> {
 
-    private final Logger logger = LoggerFactory.getLogger(ClientRequestHandler.class);
+    private Logger logger = LoggerFactory.getLogger(ServerResponseHandler.class);
+
+    private final RequestHandlerDispatch requestHandlerDispatch;
+
+    public ServerResponseHandler(RequestHandlerDispatch requestHandlerDispatch) {
+        this.requestHandlerDispatch = requestHandlerDispatch;
+    }
+
 
     @Override
     public boolean acceptInboundMessage(Object msg) throws Exception {
@@ -68,14 +80,8 @@ public class ClientRequestHandler extends SimpleChannelInboundHandler<Command> {
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Command msg) {
-        //reply
-        logger.info("channelRead message : {}", msg);
-    }
-
-    @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        logger.error("has a exception ", cause);
+        logger.info("caught exception ", cause);
         super.exceptionCaught(ctx, cause);
         Channel channel = ctx.channel();
         if (channel.isActive()) {
@@ -83,4 +89,23 @@ public class ClientRequestHandler extends SimpleChannelInboundHandler<Command> {
         }
     }
 
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, Command msg) throws Exception {
+        //读取消息处理
+        logger.info("receive message :{}", msg);
+        RequestHandler handler = requestHandlerDispatch.dispatch(msg.getHeader().getType());
+        if (null != handler) {
+            Command response = handler.handler(msg);
+
+            ctx.writeAndFlush(response).addListener(channelFuture -> {
+                if (!channelFuture.isSuccess()) {
+                    logger.info("process failed : {}", response);
+                    ctx.channel().close();
+                }
+            });
+        } else {
+            throw new Exception(String.format("No handler for request with type: %d!", msg.getHeader().getType()));
+
+        }
+    }
 }

@@ -1,24 +1,22 @@
-package com.lfh.rpc.server.netty;
+package com.lfh.rpc.server.transport.netty;
 
 import com.alibaba.fastjson.JSON;
+import com.lfh.rpc.server.service.RequestHandlerDispatch;
 import com.lfh.rpc.server.transport.protocol.Command;
-import com.lfh.rpc.server.transport.protocol.Header;
-import com.lfh.rpc.server.transport.protocol.ResponseHeader;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author lfh
  * @version 1.0
- * @date 2023/12/1 21:35
+ * @date 2023/12/1 21:42
  */
-public class ServerResponseHandler extends SimpleChannelInboundHandler<Command> {
+public class ClientRequestHandler extends SimpleChannelInboundHandler<Command> {
 
-    private Logger logger = LoggerFactory.getLogger(ServerResponseHandler.class);
-
+    private final Logger logger = LoggerFactory.getLogger(ClientRequestHandler.class);
 
     @Override
     public boolean acceptInboundMessage(Object msg) throws Exception {
@@ -71,21 +69,19 @@ public class ServerResponseHandler extends SimpleChannelInboundHandler<Command> 
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        logger.info("caught exception ", cause);
-        super.exceptionCaught(ctx, cause);
+    protected void channelRead0(ChannelHandlerContext ctx, Command msg) {
+        //reply
+//        logger.info("channelRead message : {}", msg);
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Command msg) {
-        //读取消息处理
-        logger.info("receive message :{}", msg);
-        //完成消息返回
-        Header header = msg.getHeader();
-        ResponseHeader responseHeader = new ResponseHeader(header.getVersion(), header.getRequestId(), header.getType());
-        Command command = new Command(responseHeader, "server echo success".getBytes(StandardCharsets.UTF_8));
-        ctx.writeAndFlush(command);
-
-
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        logger.error("has a exception ", cause);
+        super.exceptionCaught(ctx, cause);
+        Channel channel = ctx.channel();
+        if (channel.isActive()) {
+            channel.close();
+        }
     }
+
 }

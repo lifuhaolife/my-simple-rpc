@@ -1,5 +1,6 @@
-package com.lfh.rpc.server.netty;
+package com.lfh.rpc.server.transport.netty;
 
+import com.lfh.rpc.server.service.RequestHandlerDispatch;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
@@ -26,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  * @date 2023/11/30 23:57
  */
-public class NettyClient  implements Closeable {
+public class NettyClient implements Closeable {
 
     private final Logger logger = LoggerFactory.getLogger(NettyClient.class);
     private EventLoopGroup eventLoopGroup;
@@ -55,7 +56,7 @@ public class NettyClient  implements Closeable {
                 ch.pipeline()
                         .addLast(new RequestEncoder())
                         .addLast(new ResponseDecoder())
-                        .addLast( new ClientRequestHandler());
+                        .addLast(new ClientRequestHandler());
             }
         };
     }

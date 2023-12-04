@@ -19,6 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-boot.version>2.6.13</spring-boot.version>
+        <hutool-core.version>5.8.23</hutool-core.version>
     </properties>
     <dependencies>
         <dependency>
@@ -31,6 +32,13 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-core</artifactId>
+            <version>${hutool-core.version}</version>
+        </dependency>
+
     </dependencies>
     <dependencyManagement>
         <dependencies>

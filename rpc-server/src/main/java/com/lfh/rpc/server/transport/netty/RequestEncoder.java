@@ -1,9 +1,8 @@
-package com.lfh.rpc.server.netty;
+package com.lfh.rpc.server.transport.netty;
 
 import com.lfh.rpc.server.transport.protocol.Header;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToByteEncoder;
 
 /**
  * @author lfh

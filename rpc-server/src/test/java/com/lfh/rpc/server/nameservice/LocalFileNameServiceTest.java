@@ -1,7 +1,7 @@
 package com.lfh.rpc.server.nameservice;
 
 import com.lfh.rpc.api.NameService;
-import com.lfh.rpc.server.common.ServiceLoaderSupport;
+import com.lfh.rpc.api.common.ServiceLoaderSupport;
 import com.lfh.rpc.server.nameservice.test.data.Hello;
 import java.io.IOException;
 import java.net.URI;

@@ -1,4 +1,4 @@
-package com.lfh.rpc.server.common;
+package com.lfh.rpc.api.common;
 
 /**
  * @author lfh

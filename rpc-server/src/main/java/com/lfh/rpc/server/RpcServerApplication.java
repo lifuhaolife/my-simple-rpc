@@ -1,6 +1,6 @@
 package com.lfh.rpc.server;
 
-import com.lfh.rpc.server.netty.NettyServer;
+import com.lfh.rpc.server.transport.netty.NettyServer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
