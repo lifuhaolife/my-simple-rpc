@@ -2,12 +2,10 @@ package com.lfh.rpc.server.stuvClient;
 
 import com.lfh.rpc.server.client.DynamicStudFactory;
 import com.lfh.rpc.server.stuvClient.test.Hello;
-import com.lfh.rpc.server.stuvClient.test.HelloService;
+import com.lfh.rpc.server.transport.InFlightRequests;
 import com.lfh.rpc.server.transport.NettyTransport;
 import com.lfh.rpc.server.transport.netty.NettyClient;
 import io.netty.channel.Channel;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -15,12 +13,10 @@ import java.lang.reflect.Proxy;
 import java.net.InetSocketAddress;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
-import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.misc.ProxyGenerator;
 
 /**
  * @author lfh
@@ -53,13 +49,15 @@ public class StubClientTest {
         Hello hello = dynamicStudFactory.create(null, Hello.class);
 
     }
+
     public static void main(String[] args) {
-        try (NettyClient client = new NettyClient(new InetSocketAddress("localhost", 8099), 10);) {
+        try (InFlightRequests inFlightRequests = new InFlightRequests();
+             NettyClient client = new NettyClient(new InetSocketAddress("localhost", 8099), 10);) {
+            client.setInFlightRequests(inFlightRequests);
             client.connect();
             //连接一个通道
             Channel channel = client.getChannel();
-
-            NettyTransport nettyTransport = new NettyTransport(channel);
+            NettyTransport nettyTransport = new NettyTransport(channel, inFlightRequests);
             //创建桩：
             DynamicStudFactory dynamicStudFactory = new DynamicStudFactory();
             Hello hello = dynamicStudFactory.create(nettyTransport, Hello.class);

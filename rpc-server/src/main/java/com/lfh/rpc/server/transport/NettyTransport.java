@@ -1,6 +1,7 @@
 package com.lfh.rpc.server.transport;
 
 import com.lfh.rpc.server.transport.protocol.Command;
+import com.lfh.rpc.server.transport.protocol.response.ResponseFuture;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import java.util.concurrent.CompletableFuture;
@@ -14,8 +15,11 @@ public class NettyTransport implements Transport {
 
     private final Channel channel;
 
-    public NettyTransport(Channel channel) {
+    private final InFlightRequests inFlightRequests;
+
+    public NettyTransport(Channel channel, InFlightRequests inFlightRequests) {
         this.channel = channel;
+        this.inFlightRequests = inFlightRequests;
     }
 
     @Override
@@ -24,6 +28,8 @@ public class NettyTransport implements Transport {
         CompletableFuture<Command> commandFuture = new CompletableFuture<>();
 
         try {
+            ResponseFuture responseFuture = new ResponseFuture(command.getHeader().getRequestId(), commandFuture);
+            inFlightRequests.put(responseFuture);
             // 发送命令
             channel.writeAndFlush(command).addListener((ChannelFutureListener) channelFuture -> {
 

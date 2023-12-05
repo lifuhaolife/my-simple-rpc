@@ -24,7 +24,11 @@ public class StringSerializer implements Serializer<String> {
 
     @Override
     public String parse(byte[] bytes, int offset, int length) {
-        return new String(bytes, StandardCharsets.UTF_8);
+        // 反序列化 -1 操作
+        ByteBuffer buffer = ByteBuffer.wrap(bytes, offset, length);
+        byte[] strBytes = new byte [length];
+        buffer.get(strBytes);
+        return new String(strBytes, StandardCharsets.UTF_8);
     }
 
     @Override

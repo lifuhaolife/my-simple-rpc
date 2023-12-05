@@ -1,6 +1,6 @@
 package com.lfh.rpc.server.transport.netty;
 
-import com.lfh.rpc.server.service.RequestHandlerDispatch;
+import com.lfh.rpc.server.transport.InFlightRequests;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
@@ -39,10 +39,15 @@ public class NettyClient implements Closeable {
 
     private long connectTimeout;
 
+    private InFlightRequests inFlightRequests;
+
     public NettyClient(InetSocketAddress socketAddress, long connectTimeout) {
         this.socketAddress = socketAddress;
         this.connectTimeout = connectTimeout;
+    }
 
+    public void setInFlightRequests(InFlightRequests inFlightRequests) {
+        this.inFlightRequests = inFlightRequests;
     }
 
     public Channel getChannel() {
@@ -56,7 +61,7 @@ public class NettyClient implements Closeable {
                 ch.pipeline()
                         .addLast(new RequestEncoder())
                         .addLast(new ResponseDecoder())
-                        .addLast(new ClientRequestHandler());
+                        .addLast(new ClientRequestHandler(inFlightRequests));
             }
         };
     }

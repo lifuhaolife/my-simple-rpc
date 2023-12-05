@@ -27,7 +27,6 @@ public class NettyServer implements Closeable {
     private final Logger logger = LoggerFactory.getLogger(NettyServer.class);
     private final int port;
     private EventLoopGroup acceptEventGroup;
-
     private EventLoopGroup ioEventGroup;
     private Channel channel;
     private RequestHandlerDispatch requestHandlerDispatch;

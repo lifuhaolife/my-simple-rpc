@@ -1,8 +1,9 @@
 package com.lfh.rpc.server.transport.netty;
 
 import com.alibaba.fastjson.JSON;
-import com.lfh.rpc.server.service.RequestHandlerDispatch;
+import com.lfh.rpc.server.transport.InFlightRequests;
 import com.lfh.rpc.server.transport.protocol.Command;
+import com.lfh.rpc.server.transport.protocol.response.ResponseFuture;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -17,6 +18,13 @@ import org.slf4j.LoggerFactory;
 public class ClientRequestHandler extends SimpleChannelInboundHandler<Command> {
 
     private final Logger logger = LoggerFactory.getLogger(ClientRequestHandler.class);
+
+
+    private final InFlightRequests inFlightRequests;
+
+    public ClientRequestHandler(InFlightRequests inFlightRequests) {
+        this.inFlightRequests = inFlightRequests;
+    }
 
     @Override
     public boolean acceptInboundMessage(Object msg) throws Exception {
@@ -69,9 +77,14 @@ public class ClientRequestHandler extends SimpleChannelInboundHandler<Command> {
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Command msg) {
-        //reply
-//        logger.info("channelRead message : {}", msg);
+    protected void channelRead0(ChannelHandlerContext ctx, Command response) {
+        //reply 消息发送通过completable 转换完成
+        ResponseFuture responseFuture = inFlightRequests.remove(response.getHeader().getRequestId());
+        if (null != responseFuture) {
+            responseFuture.getFuture().complete(response);
+        } else {
+            logger.warn("Drop  response :  {}", response);
+        }
     }
 
     @Override
