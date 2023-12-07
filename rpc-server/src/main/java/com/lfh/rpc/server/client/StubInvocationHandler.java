@@ -19,7 +19,7 @@ public class StubInvocationHandler extends AbstractStub implements InvocationHan
     }
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        byte[] bytes = invokeRemote(new RpcRequest(interfaceName, method.getName(), SerializeSupport.serialize(args[0])));
+        byte[] bytes = invokeRemote(new RpcRequest(interfaceName, method.getName(), SerializeSupport.dynamicParamSerialize(args)));
         return SerializeSupport.parse(bytes);
     }
 }

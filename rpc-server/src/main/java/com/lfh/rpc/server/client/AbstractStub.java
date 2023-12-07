@@ -33,7 +33,7 @@ public abstract class AbstractStub implements ServiceStub {
         Header header = new Header(Constants.Version.VERSION_1_0_0,
                 RequestIdSupport.next(),
                 Constants.ServiceType.SERVICE_RPC_REQUEST);
-        Command command = new Command(header, SerializeSupport.serialize(request));
+        Command command = new Command(header, SerializeSupport.dynamicParamSerialize(request));
 
         try {
 

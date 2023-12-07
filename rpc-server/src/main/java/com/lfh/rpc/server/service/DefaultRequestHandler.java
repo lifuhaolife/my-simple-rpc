@@ -37,18 +37,23 @@ public class DefaultRequestHandler implements RequestHandler {
         try {
             Object serviceProvider = serviceProviderRegistry.getServiceProvider(request.getInterfaceName());
 
-            if (null == serviceProvider) {
-                // 如果没找到，返回NO_PROVIDER错误响应。
-                logger.warn("No service Provider of {}#{}(String)!", request.getInterfaceName(), request.getMethodName());
-                return new Command(new ResponseHeader(header.getVersion(),
-                        header.getRequestId(), type(), Code.NO_PROVIDER.getCode(), "No provider!"), new byte[0]);
-            }
-            String arg = SerializeSupport.parse(request.getSerializedArguments());
-            Method method = serviceProvider.getClass().getMethod(request.getMethodName(), String.class);
-            String result = (String) method.invoke(serviceProvider, arg);
-            return new Command(new ResponseHeader(header.getVersion(),
-                    header.getRequestId(), type(), Code.SUCCESS.getCode(), null), SerializeSupport.serialize(result));
+            if (null != serviceProvider) {
+                Object[] args = SerializeSupport.dynamicParamParse(request.getSerializedArguments());
+                Class[] paramTypeClass = new Class[args.length];
+                for (int i = 0; i < args.length; i++) {
+                    paramTypeClass[i] = args[i].getClass();
+                }
 
+                Method method = serviceProvider.getClass().getMethod(request.getMethodName(), paramTypeClass);
+                Object object = method.invoke(serviceProvider, args);
+                Class<?> returnType = method.getReturnType();
+                return new Command(new ResponseHeader(header.getVersion(),
+                        header.getRequestId(), type(), Code.SUCCESS.getCode(), null), SerializeSupport.serialize(object, returnType));
+            }
+            logger.warn("No service Provider of {}#{}(String)!", request.getInterfaceName(), request.getMethodName());
+            // 如果没找到，返回NO_PROVIDER错误响应。
+            return new Command(new ResponseHeader(header.getVersion(),
+                    header.getRequestId(), type(), Code.NO_PROVIDER.getCode(), "No provider!"), new byte[0]);
         } catch (Throwable e) {
             // 发生异常，返回UNKNOWN_ERROR错误响应。
             logger.warn("Exception: ", e);

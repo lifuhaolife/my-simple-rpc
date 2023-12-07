@@ -1,6 +1,7 @@
 package com.lfh.rpc.server.stuvClient;
 
 import com.lfh.rpc.server.client.DynamicStudFactory;
+import com.lfh.rpc.server.nameservice.MetaData;
 import com.lfh.rpc.server.stuvClient.test.Hello;
 import com.lfh.rpc.server.transport.InFlightRequests;
 import com.lfh.rpc.server.transport.NettyTransport;
@@ -72,6 +73,16 @@ public class StubClientTest {
                     String result = hello.sayHello(msg);
                     System.out.println(result);
                     logger.info("RPC result is : {}", result);
+
+                    String echo = hello.sayHello(msg, "echo");
+                    logger.info("echo RPC result is : {}", echo);
+
+
+                    MetaData hello1 = hello.getMetaData("hello");
+
+                    logger.info("echo metadata RPC result is : {}", hello1);
+
+
                 }
             }
         } catch (IOException | InterruptedException | TimeoutException e) {
