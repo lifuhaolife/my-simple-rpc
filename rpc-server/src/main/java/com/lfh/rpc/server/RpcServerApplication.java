@@ -14,7 +14,5 @@ public class RpcServerApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        NettyServer nettyServer = new NettyServer(8099);
-        nettyServer.startServer();
     }
 }
